@@ -20,39 +20,61 @@
 
 現在重啟電腦於BIOS選用USB隨身碟啟動, 再選Resume Previous Session便能進入MiniOS系統, 而我會再執行以下個人化配置:
 安裝中文字體:
+```
 sudo apt update
 sudo apt install fonts-wqy-zenhei
+```
 
 設定以中文顯示(過程比較繁複, 有需要才操作吧):
 從GRUB原始碼倉庫下載繁體中文語言檔zh_TW.po:
+```
 wget https://github.com/ParrotSec/grub2/blob/master/po/zh_TW.po
+```
 安裝編譯工具:
+```
 sudo apt install msgfmt nano
+```
 
 將zh_TW.po編譯成zh_TW.mo:
+```
 msgfmt zh_TW.po -o zh_TW.mo
+```
 將編譯好的zh_TW.mo複製到 MiniOS的locale目錄中:
+```
 sudo cp zh_TW.mo /minios/boot/grub/locale/
+```
 
 修改grub.cfg配置:
+```
 nano /minios/boot/grub/grub.cfg
+```
 於en_US=English前方加上zh_TW=Chinese 
 
 安裝語言包與設定locales:
+```
 sudo apt install locales
+```
 
 執行locale設定指令:
+```
 sudo dpkg-reconfigure locales
+```
 在選單中選擇zh_TW.UTF-8(繁體中文 UTF-8編碼)並設為預設語言
 
 編輯.bashrc:
+```
 nano ~/.bashrc
+```
 於檔案內容尾段加入:
+```
 export LANG=zh_TW.UTF-8
 export LC_ALL=zh_TW.UTF-8
+```
 
 然後執行以下指令將之生效:
+```
 source ~/.bashrc
+```
 
 再於系統管理工具MiniOS Configurator套用以下設定:
 Locales: zh_TW.UTF-8
@@ -60,40 +82,60 @@ Timezone: Asia/Hong_Kong
 然後重啟MiniOS便能以中文顯示
 
 安裝中文輸入法:
+```
 sudo apt install fcitx5 fcitx5-chinese-addons fcitx5-table-cangjie5 fcitx5-frontend-gtk3 fcitx5-frontend-qt5 fcitx5-config-qt
+```
 
 安裝輸入法配置具:
+```
 sudo apt install im-config zenity jq
+```
 執行配置:
+```
 im-config
+```
 提示是否選擇輸入法設定, 選Yes
 選擇系統預設使用的輸入法, 選fcitx5並點擊OK
 重啟MiniOS後於工具列的Fcitx Confuguration中加入Cangjie5, 便能使用Ctrl+Space方式切換成倉頡輸入法
 
 要讓fcitx5每次進入桌面自動執行, 可執行以下指令，將fcitx5的桌面啟動檔案複製到用戶自動啟動資料夾中:
+```
 mkdir -p ~/.config/autostart
 cp /usr/share/applications/org.fcitx.Fcitx5.desktop ~/.config/autostart/
+```
 
 修改GRUB啟動選單的預設顯示時長:
+```
 nano /minios/boot/grub/grub.cfg
+```
 修改成set timeout=0
+```
 nano /minios/boot/grub/main.cfg
+```
 修改成set timeout=3
 
 安裝Docker:
+```
 sudo apt update
 sudo apt install ca-certificates curl gnupg lsb-release -y
+```
 
 添加官方GPG key:
+```
 sudo mkdir -m 0755 -p /etc/apt/keyrings
 curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+```
 配置Docker軟件源:
+```
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
 $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
 
 安裝Docker Engine:
+```
 sudo apt update
 sudo apt install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+```
 
 最後上方我不是說發現了一個有趣的做法, 那就是原先Start a New Session是創建一個全新初始狀態的工作區, 但透過以下方法, 可替換成一個被修改過的工作區,
 這樣做法有什麼好處? 就是能保存起一個滿意的工作區作為備份, 然後快速搭建起另一個滿意的工作區作為變更, 你都不想再多做一次上述種種的個人配置及工具安裝過程吧.
